@@ -1,493 +1,123 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import classes from './Check.module.css';
 
-export default function Check() {
-    const [num1, setNum1] = useState(0);
-    const [num2, setNum2] = useState(0);
-    const [num3, setNum3] = useState(0);
-    const [num4, setNum4] = useState(0);
+function Check() {
+    const NUM_ROWS = 8;
+    const NUM_DIGITS = 4;
 
-    function getInputInteger() {
-        setNum1(document.getElementById('num1'));
-        setNum2(document.getElementById('num2'));
-        setNum3(document.getElementById('num3'));
-        setNum4(document.getElementById('num4'));
-    }
+    const initialInputValues = Array.from({ length: NUM_ROWS }, () =>
+        Array(NUM_DIGITS).fill('')
+    );
 
+    const [inputValues, setInputValues] = useState(initialInputValues);
+    const [disabledRows, setDisabledRows] = useState(() => {
+        // Initialize first row: enabled, but all others: disabled
+        const initialDisabledRows = Array(NUM_ROWS).fill(true);
+        initialDisabledRows[0] = false;
+        return initialDisabledRows;
+    });
 
-    return <>
+    const handleInputChange = (partIndex, digitIndex, value) => {
+        const newInputValues = [...inputValues];
+        newInputValues[partIndex][digitIndex] = value;
+        setInputValues(newInputValues);
+    };
+
+    const handleCheckClick = (partIndex) => {
+        if (inputValues[partIndex][0] === document.getElementById('firstNumber').innerHTML) {
+            document.getElementsByClassName(0)[partIndex].style.border = '2px solid #00ff00';
+        } else if (
+            inputValues[partIndex][0] === document.getElementById('secondNumber').innerHTML ||
+            inputValues[partIndex][0] === document.getElementById('thirdNumber').innerHTML ||
+            inputValues[partIndex][0] === document.getElementById('fourthNumber').innerHTML) {
+            document.getElementsByClassName(0)[partIndex].style.border = '2px solid #ffd700';
+        } else {
+            document.getElementsByClassName(0)[partIndex].style.border = '2px solid #ff0000';
+        }
+
+        if (inputValues[partIndex][1] === document.getElementById('secondNumber').innerHTML) {
+            document.getElementsByClassName(1)[partIndex].style.border = '2px solid #00ff00';
+        } else if (
+            inputValues[partIndex][1] === document.getElementById('firstNumber').innerHTML ||
+            inputValues[partIndex][1] === document.getElementById('thirdNumber').innerHTML ||
+            inputValues[partIndex][1] === document.getElementById('fourthNumber').innerHTML) {
+            document.getElementsByClassName(1)[partIndex].style.border = '2px solid #ffd700';
+        } else {
+            document.getElementsByClassName(1)[partIndex].style.border = '2px solid #ff0000';
+        }
+
+        if (inputValues[partIndex][2] === document.getElementById('thirdNumber').innerHTML) {
+            document.getElementsByClassName(2)[partIndex].style.border = '2px solid #00ff00';
+        } else if (
+            inputValues[partIndex][2] === document.getElementById('firstNumber').innerHTML ||
+            inputValues[partIndex][2] === document.getElementById('secondNumber').innerHTML ||
+            inputValues[partIndex][2] === document.getElementById('fourthNumber').innerHTML) {
+            document.getElementsByClassName(2)[partIndex].style.border = '2px solid #ffd700';
+        } else {
+            document.getElementsByClassName(2)[partIndex].style.border = '2px solid #ff0000';
+        }
+
+        if (inputValues[partIndex][3] === document.getElementById('fourthNumber').innerHTML) {
+            document.getElementsByClassName(3)[partIndex].style.border = '2px solid #00ff00';
+        } else if (
+            inputValues[partIndex][3] === document.getElementById('firstNumber').innerHTML ||
+            inputValues[partIndex][3] === document.getElementById('secondNumber').innerHTML ||
+            inputValues[partIndex][3] === document.getElementById('thirdNumber').innerHTML) {
+            document.getElementsByClassName(3)[partIndex].style.border = '2px solid #ffd700';
+        } else {
+            document.getElementsByClassName(3)[partIndex].style.border = '2px solid #ff0000';
+        }
+
+        // set the current row: disabled
+        const newDisabledRows = [...disabledRows];
+        newDisabledRows[partIndex] = true;
+        setDisabledRows(newDisabledRows);
+
+        // set the next row: enabled
+        if (partIndex < NUM_ROWS - 1) {
+            newDisabledRows[partIndex + 1] = false;
+            setDisabledRows(newDisabledRows);
+        }
+    };
+
+    const inputRefs = useRef(Array(NUM_ROWS).fill().map(() => Array(NUM_DIGITS).fill(null)));
+
+    return (
         <div className={classes.container}>
             <div className={classes.check}>
-                <div className={classes.part}>
-                    <input
-                        className={classes.num1}
-                        id='num1'
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                    />
-                    <input
-                        className={classes.num2}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                    />
-                    <input
-                        className={classes.num3}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                    />
-                    <input
-                        className={classes.num4}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                    />
-                    <button className={classes.checkBtn} onClick={getInputInteger}>Check</button>
-                </div>
-                <div className={classes.part}>
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <button className={classes.checkBtn} disabled={true}>Check</button>
-                </div>
-                <div className={classes.part}>
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <button className={classes.checkBtn} disabled={true}>Check</button>
-                </div>
-                <div className={classes.part}>
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <button className={classes.checkBtn} disabled={true}>Check</button>
-                </div>
-                <div className={classes.part}>
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <button className={classes.checkBtn} disabled={true}>Check</button>
-                </div>
-                <div className={classes.part}>
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <button className={classes.checkBtn} disabled={true}>Check</button>
-                </div>
-                <div className={classes.part}>
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <button className={classes.checkBtn} disabled={true}>Check</button>
-                </div>
-                <div className={classes.part}>
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <input
-                        className={classes.num}
-                        type="text"
-                        maxLength="1"
-                        onKeyDown={(e) => {
-                            if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
-                                e.preventDefault();
-                            }
-                        }}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                        }}
-                        disabled={true}
-                    />
-                    <button className={classes.checkBtn} disabled={true}>Check</button>
-                </div>
+                {[...Array(NUM_ROWS)].map((_, partIndex) => (
+                    <div className={classes.part} key={partIndex}>
+                        {[...Array(NUM_DIGITS)].map((_, digitIndex) => (
+                            <input
+                                key={digitIndex}
+                                className={digitIndex}
+                                type="text"
+                                maxLength="1"
+                                onKeyDown={(e) => {
+                                    if (!e.key.match(/[0-9]/) && e.key !== 'Backspace') {
+                                        e.preventDefault();
+                                    }
+                                }}
+                                onInput={(e) => {
+                                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                                    handleInputChange(partIndex, digitIndex, e.target.value);
+                                }}
+                                disabled={disabledRows[partIndex]}
+                                value={inputValues[partIndex][digitIndex]}
+                                ref={(input) => (inputRefs.current[partIndex][digitIndex] = input)}
+                            />
+                        ))}
+                        <button
+                            className={classes.checkBtn}
+                            disabled={disabledRows[partIndex]}
+                            onClick={() => handleCheckClick(partIndex)}
+                        >
+                            Check
+                        </button>
+                    </div>
+                ))}
             </div>
         </div>
-    </>
+    );
 }
+export default Check;

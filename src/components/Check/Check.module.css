@@ -18,11 +18,7 @@
     margin: 0;
 }
 
-.num1,
-.num2,
-.num3,
-.num4,
-.num {
+input {
     width: 1.5rem;
     padding: 0.5rem;
     margin: 0.5rem;
