@@ -13,22 +13,33 @@
 }
 
 .title,
-.code{
+.code {
     text-align: center;
 }
 
 .firstNumber,
 .secondNumber,
 .thirdNumber,
-.fourthNumber{
+.fourthNumber {
     padding: 0 0.5rem;
     display: none;
 }
 
-.startBtn{
+.startBtn {
     background-color: #cadbff;
     border: 1px solid #000;
     width: 100%;
-    margin: 1rem 0;
+    margin: 5rem 0 0;
     padding: 1rem 0;
+}
+
+@media (max-width: 640px) {
+    .container {
+        width: 100% !important;
+        margin: 1rem auto;
+    }
+
+    .startBtn {
+        margin: 2rem 0 0;
+    }
 }
