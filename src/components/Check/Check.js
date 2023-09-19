@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import classes from './Check.module.css';
 import { getRndInteger } from '../Start/Start';
 
@@ -11,12 +11,14 @@ function Check() {
     );
 
     const [inputValues, setInputValues] = useState(initialInputValues);
-    const [disabledRows, setDisabledRows] = useState(() => {
+    const [disabledRows, setDisabledRows] = useState([]);
+
+    useEffect(() => {
         // Initialize first row: enabled, but all others: disabled
         const initialDisabledRows = Array(NUM_ROWS).fill(true);
         initialDisabledRows[0] = false;
-        return initialDisabledRows;
-    });
+        setDisabledRows(initialDisabledRows);
+    }, []);
 
     const handleInputChange = (partIndex, digitIndex, value) => {
         const newInputValues = [...inputValues];
@@ -189,3 +191,4 @@ function Check() {
     );
 }
 export default Check;
+

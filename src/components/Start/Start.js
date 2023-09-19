@@ -16,12 +16,7 @@ export default function Start() {
     const [num3, setNum3] = useState(0);
     const [num4, setNum4] = useState(0);
 
-    // useEffect(() => {
-    //     console.log(num1);
-    //     console.log(num2);
-    //     console.log(num3);
-    //     console.log(num4);
-    // }, [num1, num2, num3, num4]);
+    const [disable, setDisable] = useState(false);
 
     function handleStartBtnClick() {
         const { num1, num2, num3, num4 } = getRndInteger();
@@ -30,8 +25,7 @@ export default function Start() {
         setNum3(num3);
         setNum4(num4);
 
-        // Disable the start button
-        document.getElementById('startBtn').setAttribute("disabled", "disabled");
+        setDisable(true);
     }
 
     return (
@@ -45,7 +39,7 @@ export default function Start() {
                     <span id='thirdNumber' className={classes.thirdNumber}>{num3}</span>
                     <span id='fourthNumber' className={classes.fourthNumber}>{num4}</span>
                 </div>
-                <button id='startBtn' className={classes.startBtn} onClick={handleStartBtnClick}>Start</button>
+                <button id='startBtn' className={classes.startBtn} onClick={handleStartBtnClick} disabled={disable}>Start</button>
             </div>
         </div>
     );
