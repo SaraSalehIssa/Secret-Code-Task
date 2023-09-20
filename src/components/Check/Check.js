@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import classes from './Check.module.css';
 import { getRndInteger } from '../Start/Start';
 
-function Check() {
+function Check(props) {
     const NUM_ROWS = 8;
     const NUM_DIGITS = 4;
 
@@ -13,12 +13,17 @@ function Check() {
     const [inputValues, setInputValues] = useState(initialInputValues);
     const [disabledRows, setDisabledRows] = useState([]);
 
+    const [randomNum, setRandomNum] = useState([]);
+
+
     useEffect(() => {
         // Initialize first row: enabled, but all others: disabled
         const initialDisabledRows = Array(NUM_ROWS).fill(true);
         initialDisabledRows[0] = false;
         setDisabledRows(initialDisabledRows);
-    }, []);
+
+        setRandomNum(props.numbers);
+    }, [props.numbers]);
 
     const handleInputChange = (partIndex, digitIndex, value) => {
         const newInputValues = [...inputValues];
@@ -27,54 +32,25 @@ function Check() {
     };
 
     const handleCheckClick = (partIndex) => {
-        if (inputValues[partIndex][0] === document.getElementById('firstNumber').innerHTML) {
-            document.getElementsByClassName(0)[partIndex].style.border = '2px solid #00ff00';
-        } else if (
-            inputValues[partIndex][0] === document.getElementById('secondNumber').innerHTML ||
-            inputValues[partIndex][0] === document.getElementById('thirdNumber').innerHTML ||
-            inputValues[partIndex][0] === document.getElementById('fourthNumber').innerHTML) {
-            document.getElementsByClassName(0)[partIndex].style.border = '2px solid #ffd700';
-        } else {
-            document.getElementsByClassName(0)[partIndex].style.border = '2px solid #ff0000';
+        for (let digitIndex = 0; digitIndex < NUM_DIGITS; digitIndex++) {
+            const inputValue = parseInt(inputValues[partIndex][digitIndex]);
+            const randomNumDigit = randomNum[digitIndex];
+
+            const borderClass = digitIndex;
+
+            if (inputValue === randomNumDigit) {
+                document.getElementsByClassName(borderClass)[partIndex].style.border = '2px solid #00ff00';
+            } else if ([...randomNum].includes(inputValue)) {
+                document.getElementsByClassName(borderClass)[partIndex].style.border = '2px solid #ffd700';
+            } else {
+                document.getElementsByClassName(borderClass)[partIndex].style.border = '2px solid #ff0000';
+            }
         }
 
-        if (inputValues[partIndex][1] === document.getElementById('secondNumber').innerHTML) {
-            document.getElementsByClassName(1)[partIndex].style.border = '2px solid #00ff00';
-        } else if (
-            inputValues[partIndex][1] === document.getElementById('firstNumber').innerHTML ||
-            inputValues[partIndex][1] === document.getElementById('thirdNumber').innerHTML ||
-            inputValues[partIndex][1] === document.getElementById('fourthNumber').innerHTML) {
-            document.getElementsByClassName(1)[partIndex].style.border = '2px solid #ffd700';
-        } else {
-            document.getElementsByClassName(1)[partIndex].style.border = '2px solid #ff0000';
-        }
-
-        if (inputValues[partIndex][2] === document.getElementById('thirdNumber').innerHTML) {
-            document.getElementsByClassName(2)[partIndex].style.border = '2px solid #00ff00';
-        } else if (
-            inputValues[partIndex][2] === document.getElementById('firstNumber').innerHTML ||
-            inputValues[partIndex][2] === document.getElementById('secondNumber').innerHTML ||
-            inputValues[partIndex][2] === document.getElementById('fourthNumber').innerHTML) {
-            document.getElementsByClassName(2)[partIndex].style.border = '2px solid #ffd700';
-        } else {
-            document.getElementsByClassName(2)[partIndex].style.border = '2px solid #ff0000';
-        }
-
-        if (inputValues[partIndex][3] === document.getElementById('fourthNumber').innerHTML) {
-            document.getElementsByClassName(3)[partIndex].style.border = '2px solid #00ff00';
-        } else if (
-            inputValues[partIndex][3] === document.getElementById('firstNumber').innerHTML ||
-            inputValues[partIndex][3] === document.getElementById('secondNumber').innerHTML ||
-            inputValues[partIndex][3] === document.getElementById('thirdNumber').innerHTML) {
-            document.getElementsByClassName(3)[partIndex].style.border = '2px solid #ffd700';
-        } else {
-            document.getElementsByClassName(3)[partIndex].style.border = '2px solid #ff0000';
-        }
-
-        if (inputValues[partIndex][0] === document.getElementById('firstNumber').innerHTML &&
-            inputValues[partIndex][1] === document.getElementById('secondNumber').innerHTML &&
-            inputValues[partIndex][2] === document.getElementById('thirdNumber').innerHTML &&
-            inputValues[partIndex][3] === document.getElementById('fourthNumber').innerHTML) {
+        if (inputValues[partIndex][0] === randomNum[0] &&
+            inputValues[partIndex][1] === randomNum[1] &&
+            inputValues[partIndex][2] === randomNum[2] &&
+            inputValues[partIndex][3] === randomNum[3]) {
             document.getElementById('title').innerHTML = 'You won!';
 
             document.getElementById('firstNumber').style.display = 'inline';
@@ -86,12 +62,17 @@ function Check() {
             document.getElementById('startBtn').disabled = false;
             document.getElementById('startBtn').onclick = resetGame;
         } else if (partIndex === 7 &&
-            (inputValues[partIndex][0] !== document.getElementById('firstNumber').innerHTML ||
-                inputValues[partIndex][1] !== document.getElementById('secondNumber').innerHTML ||
-                inputValues[partIndex][2] !== document.getElementById('thirdNumber').innerHTML ||
-                inputValues[partIndex][3] !== document.getElementById('fourthNumber').innerHTML)) {
+            (inputValues[partIndex][0] !== randomNum[0] ||
+                inputValues[partIndex][1] !== randomNum[1] ||
+                inputValues[partIndex][2] !== randomNum[2] ||
+                inputValues[partIndex][3] !== randomNum[3])) {
             document.getElementById('title').innerHTML = 'You lost!';
             document.getElementById('secretCode').innerHTML = 'The secret code:';
+
+            document.getElementById('firstNumber').innerHTML = randomNum[0];
+            document.getElementById('secondNumber').innerHTML = randomNum[1];
+            document.getElementById('thirdNumber').innerHTML = randomNum[2];
+            document.getElementById('fourthNumber').innerHTML = randomNum[3];
 
             document.getElementById('firstNumber').style.display = 'inline';
             document.getElementById('secondNumber').style.display = 'inline';
@@ -133,7 +114,10 @@ function Check() {
         document.getElementById('fourthNumber').style.display = 'none';
 
         // Generate a new secret code (you need to implement this function)
-        getRndInteger();
+        var newNumber = getRndInteger();
+        props.setNumbers([newNumber.num1, newNumber.num2, newNumber.num3, newNumber.num4]);
+
+        setRandomNum(props.numbers);
 
         // Reset the title
         document.getElementById('title').innerHTML = 'Secret Code';
@@ -144,11 +128,10 @@ function Check() {
         // Disable the start again button
         document.getElementById('startBtn').disabled = true;
 
-        for (let i = 0; i < NUM_ROWS; i++) {
-            document.getElementsByClassName(0)[i].style.border = '1px solid #000';
-            document.getElementsByClassName(1)[i].style.border = '1px solid #000';
-            document.getElementsByClassName(2)[i].style.border = '1px solid #000';
-            document.getElementsByClassName(3)[i].style.border = '1px solid #000';
+        for (let j = 0; j < NUM_DIGITS; j++) {
+            for (let i = 0; i < NUM_ROWS; i++) {
+                document.getElementsByClassName(j)[i].style.border = '1px solid #000';
+            }
         }
     };
 
@@ -191,4 +174,3 @@ function Check() {
     );
 }
 export default Check;
-

@@ -10,7 +10,7 @@ export function getRndInteger() {
     };
 }
 
-export default function Start() {
+export default function Start(props) {
     const [num1, setNum1] = useState(0);
     const [num2, setNum2] = useState(0);
     const [num3, setNum3] = useState(0);
@@ -20,6 +20,8 @@ export default function Start() {
 
     function handleStartBtnClick() {
         const { num1, num2, num3, num4 } = getRndInteger();
+
+        props.setNumbers([num1, num2, num3, num4]);
         setNum1(num1);
         setNum2(num2);
         setNum3(num3);
