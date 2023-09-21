@@ -5,6 +5,7 @@ import { getRndInteger } from '../Start/Start';
 function Check(props) {
     const NUM_ROWS = 8;
     const NUM_DIGITS = 4;
+    var newNumber = [];
 
     const initialInputValues = Array.from({ length: NUM_ROWS }, () =>
         Array(NUM_DIGITS).fill('')
@@ -15,7 +16,6 @@ function Check(props) {
 
     const [randomNum, setRandomNum] = useState([]);
 
-
     useEffect(() => {
         // Initialize first row: enabled, but all others: disabled
         const initialDisabledRows = Array(NUM_ROWS).fill(true);
@@ -23,7 +23,7 @@ function Check(props) {
         setDisabledRows(initialDisabledRows);
 
         setRandomNum(props.numbers);
-    }, [props.numbers]);
+    }, [props.numbers, randomNum]);
 
     const handleInputChange = (partIndex, digitIndex, value) => {
         const newInputValues = [...inputValues];
@@ -31,68 +31,69 @@ function Check(props) {
         setInputValues(newInputValues);
     };
 
+    useEffect(() => {
+        if (newNumber.length !== 0) {
+            setRandomNum(newNumber);
+        }
+    }, [newNumber, randomNum]);
+
     const handleCheckClick = (partIndex) => {
         for (let digitIndex = 0; digitIndex < NUM_DIGITS; digitIndex++) {
             const inputValue = parseInt(inputValues[partIndex][digitIndex]);
             const randomNumDigit = randomNum[digitIndex];
-
-            const borderClass = digitIndex;
+            const element = document.getElementsByClassName(digitIndex)[partIndex];
 
             if (inputValue === randomNumDigit) {
-                document.getElementsByClassName(borderClass)[partIndex].style.border = '2px solid #00ff00';
-            } else if ([...randomNum].includes(inputValue)) {
-                document.getElementsByClassName(borderClass)[partIndex].style.border = '2px solid #ffd700';
+                element.style.border = '2px solid #00ff00';
+            } else if (randomNum.includes(inputValue)) {
+                element.style.border = '2px solid #ffd700';
             } else {
-                document.getElementsByClassName(borderClass)[partIndex].style.border = '2px solid #ff0000';
+                element.style.border = '2px solid #ff0000';
             }
         }
 
-        if (inputValues[partIndex][0] === randomNum[0] &&
-            inputValues[partIndex][1] === randomNum[1] &&
-            inputValues[partIndex][2] === randomNum[2] &&
-            inputValues[partIndex][3] === randomNum[3]) {
-            document.getElementById('title').innerHTML = 'You won!';
+        const isWinningGuess = Array.from({ length: NUM_DIGITS }).every((_, i) =>
+            parseInt(inputValues[partIndex][i]) === randomNum[i]
+        );
 
-            document.getElementById('firstNumber').style.display = 'inline';
-            document.getElementById('secondNumber').style.display = 'inline';
-            document.getElementById('thirdNumber').style.display = 'inline';
-            document.getElementById('fourthNumber').style.display = 'inline';
-
-            document.getElementById('startBtn').innerHTML = 'Start Again';
-            document.getElementById('startBtn').disabled = false;
-            document.getElementById('startBtn').onclick = resetGame;
-        } else if (partIndex === 7 &&
-            (inputValues[partIndex][0] !== randomNum[0] ||
-                inputValues[partIndex][1] !== randomNum[1] ||
-                inputValues[partIndex][2] !== randomNum[2] ||
-                inputValues[partIndex][3] !== randomNum[3])) {
-            document.getElementById('title').innerHTML = 'You lost!';
-            document.getElementById('secretCode').innerHTML = 'The secret code:';
-
-            document.getElementById('firstNumber').innerHTML = randomNum[0];
-            document.getElementById('secondNumber').innerHTML = randomNum[1];
-            document.getElementById('thirdNumber').innerHTML = randomNum[2];
-            document.getElementById('fourthNumber').innerHTML = randomNum[3];
-
-            document.getElementById('firstNumber').style.display = 'inline';
-            document.getElementById('secondNumber').style.display = 'inline';
-            document.getElementById('thirdNumber').style.display = 'inline';
-            document.getElementById('fourthNumber').style.display = 'inline';
-
-            document.getElementById('startBtn').innerHTML = 'Start Again';
-            document.getElementById('startBtn').disabled = false;
-            document.getElementById('startBtn').onclick = resetGame;
-        }
-
-        // set the current row: disabled
+        // Set the current row as disabled
         const newDisabledRows = [...disabledRows];
         newDisabledRows[partIndex] = true;
         setDisabledRows(newDisabledRows);
 
-        // set the next row: enabled
+        // Set the next row as enabled
         if (partIndex < NUM_ROWS - 1) {
             newDisabledRows[partIndex + 1] = false;
             setDisabledRows(newDisabledRows);
+        }
+
+        if (isWinningGuess) {
+
+            document.getElementById('title').innerHTML = 'You won!';
+
+            for (let i = 0; i < NUM_DIGITS; i++) {
+                document.getElementById(`Number${i + 1}`).innerHTML = randomNum[i];
+                document.getElementById(`Number${i + 1}`).style.display = 'inline';
+            }
+
+            document.getElementById('startBtn').innerHTML = 'Start Again';
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('startBtn').onclick = resetGame;
+
+        } else if (!isWinningGuess && partIndex === NUM_ROWS - 1) {
+
+            document.getElementById('title').innerHTML = 'You lost!';
+            document.getElementById('secretCode').innerHTML = 'The secret code:';
+
+            for (let i = 0; i < NUM_DIGITS; i++) {
+                document.getElementById(`Number${i + 1}`).innerHTML = randomNum[i];
+                document.getElementById(`Number${i + 1}`).style.display = 'inline';
+            }
+
+
+            document.getElementById('startBtn').innerHTML = 'Start Again';
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('startBtn').onclick = resetGame;
         }
     };
 
@@ -108,16 +109,13 @@ function Check(props) {
         setDisabledRows(initialDisabledRows);
 
         // Hide the secret code
-        document.getElementById('firstNumber').style.display = 'none';
-        document.getElementById('secondNumber').style.display = 'none';
-        document.getElementById('thirdNumber').style.display = 'none';
-        document.getElementById('fourthNumber').style.display = 'none';
+        for (let i = 0; i < NUM_DIGITS; i++) {
+            document.getElementById(`Number${i + 1}`).style.display = 'none';
+        }
 
         // Generate a new secret code (you need to implement this function)
-        var newNumber = getRndInteger();
+        newNumber = getRndInteger();
         props.setNumbers([newNumber.num1, newNumber.num2, newNumber.num3, newNumber.num4]);
-
-        setRandomNum(props.numbers);
 
         // Reset the title
         document.getElementById('title').innerHTML = 'Secret Code';
